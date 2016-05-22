@@ -190,12 +190,6 @@ def compareLocalToWeb(local, web):
 
 
 # Download
-# CLI should provide option to download all media files from cloud to loc
-# Download should include all collections/albums---------------------------------------------DONE
-# One directory should be created per collection---------------------------------------------DONE
-# Build a local index of all media files using sqlite and optionally
-# generated config files--
-
 
 # albums present only on web is passed to dwld
 def dowloadWebOnlyAlbums(gd_client, webonlyalbums, webAlbums):
@@ -209,12 +203,10 @@ def dowloadWebOnlyAlbums(gd_client, webonlyalbums, webAlbums):
             downloadPhoto(photo.content.src, location, photo.title.text)
 
 # Upload
-# Upload specified directory as a collection/album to cloud------------------------------------DONE
-# Show progress during upload--------------------------------------------
-# Ability to resume broken uploads---------------------------------------
-
 
 # for local only albums...to upload on web
+
+
 def uploadLocalOnlyAlbums(gd_client, localonlyalbums, localAlbums):
     for album in localonlyalbums:
         uploadAlbum(gd_client, album, localAlbums[album])
@@ -228,43 +220,7 @@ def uploadAlbum(gd_client, dir, localAlbum):
         localPath = os.path.join(localAlbum['path'], pic)
         upload(gd_client, localPath, webAlbum, pic)
 
-'''
-def upload(gd_client, localPath, album, fileName):
-    print("Uploading " + localPath)
-    contentType = getContentType(fileName)
 
-    if contentType.startswith('image/'):
-        isImage = True
-        picasa_photo = gdata.photos.PhotoEntry()
-    else:
-        size = os.path.getsize(localPath)
-
-        # tested by cpbotha on 2013-05-24
-        # this limit still exists
-        if size > PICASA_MAX_VIDEO_SIZE_BYTES:
-            print("Video file too big to upload: " + str(size) +
-                  " > " + str(PICASA_MAX_VIDEO_SIZE_BYTES))
-            return
-        isImage = False
-        picasa_photo = VideoEntry()
-    picasa_photo.title = atom.Title(text=fileName)
-    picasa_photo.summary = atom.Summary(text='', summary_type='text')
-    delay = 1
-    while True:
-        try:
-            if isImage:
-                gd_client.InsertPhoto(
-                    album, picasa_photo, localPath, content_type=contentType)
-            else:
-                gd_client.InsertVideo(
-                    album, picasa_photo, localPath, content_type=contentType)
-            break
-        except gdata.photos.service.GooglePhotosException as e:
-            print("Got exception " + str(e))
-            print("retrying in " + str(delay) + " seconds")
-            time.sleep(delay)
-            delay = delay * 2
-'''
 def upload(gd_client, localPath, album, fileName):
     print 'ho rha use upload'
     print("Uploading " + localPath)
@@ -285,16 +241,13 @@ def upload(gd_client, localPath, album, fileName):
             delay = delay * 2
 
 # Sync
-# User should be able to sync all the files to and from local directory.--------------DONE
-# Detect files missing files (cloud and local)----------------------------------------DONE
-# Support to delete extra files from either specified source (cloud or
-# local)---------DONE
-
 
 # IN CASE WANT TO DOWLOAD EXTRA FILE FROM CLOUD OR UPLOAD EXTRA FILE IN
 # DIR TO CLOUD
 
-# dwld extra photo on cloud to local album
+# dwld missing file in local album
+
+
 def downloadMissingPhoto(gd_client, commonalbum, webAlbums, localAlbums):
     for album in commonalbum:
         album_id = webAlbums[album].gphoto_id.text
@@ -303,6 +256,8 @@ def downloadMissingPhoto(gd_client, commonalbum, webAlbums, localAlbums):
         for photo in webPhotos:
             if photo.title.text not in localAlbums[album]['files']:
                 downloadPhoto(photo.content.src, location, photo.title.text)
+
+# upload missing file in picasa album
 
 
 def uploadMissingPhoto(gd_client, commonalbum, localAlbums, webAlbums):
