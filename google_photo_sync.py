@@ -59,7 +59,6 @@ def OAuth2Login(client_secrets, credential_store, email):
 
 # list of photos within a album
 
-
 def getPhotosForPicasaAlbum(gd_client, album):
     photos = gd_client.GetFeed(
         '/data/feed/api/user/%s/albumid/%s?kind=photo' % (
@@ -214,13 +213,11 @@ def dowloadWebOnlyAlbums(gd_client, webonlyalbums, webAlbums):
 
 # for local only albums, to upload on web
 
-
 def uploadLocalOnlyAlbums(gd_client, localonlyalbums, localAlbums):
     for album in localonlyalbums:
         uploadAlbum(gd_client, album, localAlbums[album])
 
 # to upload photos of albums present only on local directory
-
 
 def uploadAlbum(gd_client, dir, localAlbum):
     webAlbum = findOrCreateAlbum(gd_client, dir)
@@ -254,7 +251,6 @@ def upload(gd_client, localPath, album, fileName):
 
 # dwld missing file in local album
 
-
 def downloadMissingPhoto(gd_client, commonalbum, webAlbums, localAlbums):
     for album in commonalbum:
         album_id = webAlbums[album].gphoto_id.text
@@ -265,7 +261,6 @@ def downloadMissingPhoto(gd_client, commonalbum, webAlbums, localAlbums):
                 downloadPhoto(photo.content.src, location, photo.title.text)
 
 # upload missing file in picasa album
-
 
 def uploadMissingPhoto(gd_client, commonalbum, localAlbums, webAlbums):
     for album in commonalbum:
@@ -291,7 +286,6 @@ def delFromWeb(gd_client, dir, localAlbums, webAlbums):
                 gd_client.Delete(photo)
 
 # delete extra from local directory
-
 
 def delFromLocal(gd_client, dir, localAlbums, webAlbums):
     for album in dir:
