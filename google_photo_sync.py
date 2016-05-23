@@ -57,8 +57,10 @@ def OAuth2Login(client_secrets, credential_store, email):
 
     return gd_client
 
+# list of photos within a album
 
-def getPhotosForPicasaAlbum(gd_client, album):  # list of photos within a album
+
+def getPhotosForPicasaAlbum(gd_client, album):
     photos = gd_client.GetFeed(
         '/data/feed/api/user/%s/albumid/%s?kind=photo' % (
             gd_client.email, album.gphoto_id.text))
@@ -153,7 +155,7 @@ def visit(arg, dirname, names):
     mediaFiles = [name for name in names if not name.startswith('.') and isAllowedFile(name) and
                   os.path.isfile(os.path.join(dirname, name))]
     count = len(mediaFiles)
-    # 23.05...considering empty albums also
+    # considering empty albums also
     if count >= 0:
         arg[dirname] = {'files': sorted(mediaFiles)}
 
@@ -195,7 +197,7 @@ def compareLocalToWeb(local, web):
 
 # Download
 
-# albums present only on web is passed to dwld
+# to download albums present only on the web
 def dowloadWebOnlyAlbums(gd_client, webonlyalbums, webAlbums):
     for album in webonlyalbums:
         album_id = webAlbums[album].gphoto_id.text
@@ -210,16 +212,16 @@ def dowloadWebOnlyAlbums(gd_client, webonlyalbums, webAlbums):
 
 # Upload
 
-# for local only albums...to upload on web
+# for local only albums, to upload on web
 
 
 def uploadLocalOnlyAlbums(gd_client, localonlyalbums, localAlbums):
     for album in localonlyalbums:
         uploadAlbum(gd_client, album, localAlbums[album])
-##
+
+# to upload photos of albums present only on local directory
 
 
-# to upload photos of albums present only on loal
 def uploadAlbum(gd_client, dir, localAlbum):
     webAlbum = findOrCreateAlbum(gd_client, dir)
     for pic in localAlbum['files']:
@@ -280,8 +282,6 @@ def uploadMissingPhoto(gd_client, commonalbum, localAlbums, webAlbums):
 # In case  you want to propagate delete to/from cloud/directory
 
 # delete extra photo from cloud album
-
-
 def delFromWeb(gd_client, dir, localAlbums, webAlbums):
     for album in dir:
         webPhotos = getPhotosForPicasaAlbum(gd_client, webAlbums[album])
