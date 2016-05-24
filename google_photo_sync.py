@@ -1,19 +1,14 @@
 import os
 import sys
-import argparse
 import atom
 import atom.service
-import filecmp
 import gdata
 import gdata.photos.service
 import gdata.media
 import gdata.geo
 import gdata.gauth
-import getpass
 import httplib2
 import os
-import subprocess
-import tempfile
 import time
 import webbrowser
 import urllib
@@ -58,6 +53,7 @@ def OAuth2Login(client_secrets, credential_store, email):
     return gd_client
 
 # list of photos within a album
+
 
 def getPhotosForPicasaAlbum(gd_client, album):
     photos = gd_client.GetFeed(
@@ -213,11 +209,13 @@ def dowloadWebOnlyAlbums(gd_client, webonlyalbums, webAlbums):
 
 # for local only albums, to upload on web
 
+
 def uploadLocalOnlyAlbums(gd_client, localonlyalbums, localAlbums):
     for album in localonlyalbums:
         uploadAlbum(gd_client, album, localAlbums[album])
 
 # to upload photos of albums present only on local directory
+
 
 def uploadAlbum(gd_client, dir, localAlbum):
     webAlbum = findOrCreateAlbum(gd_client, dir)
@@ -251,6 +249,7 @@ def upload(gd_client, localPath, album, fileName):
 
 # dwld missing file in local album
 
+
 def downloadMissingPhoto(gd_client, commonalbum, webAlbums, localAlbums):
     for album in commonalbum:
         album_id = webAlbums[album].gphoto_id.text
@@ -261,6 +260,7 @@ def downloadMissingPhoto(gd_client, commonalbum, webAlbums, localAlbums):
                 downloadPhoto(photo.content.src, location, photo.title.text)
 
 # upload missing file in picasa album
+
 
 def uploadMissingPhoto(gd_client, commonalbum, localAlbums, webAlbums):
     for album in commonalbum:
@@ -287,6 +287,7 @@ def delFromWeb(gd_client, dir, localAlbums, webAlbums):
 
 # delete extra from local directory
 
+
 def delFromLocal(gd_client, dir, localAlbums, webAlbums):
     for album in dir:
         webPhotos = getPhotosForPicasaAlbum(gd_client, webAlbums[album])
@@ -305,16 +306,15 @@ if __name__ == '__main__':
     destination = raw_input(
         'enter the local directory where you have the albums --> ')
 
-    # options for oauth2 login
-    configdir = os.path.expanduser('C:\Users\Piyush Kumar\Desktop\gdata-python-client-master')
-    client_secrets = os.path.join(configdir, 'client_secrets.json')
-    credential_store = os.path.join(configdir, 'credentials.dat')
+    from client_data import *
 
-    gd_client = OAuth2Login(client_secrets, credential_store, email)
+    gd_client = OAuth2Login(client_secret, credential_store, email)
 
     x = 1
     while(x == 1):
-        time.sleep(5)
+        # adding delay as sometimes change done at picasa album takes time to
+        # get reflected
+        time.sleep(3)
         # getting list of albums in picasa
         webAlbums = getWebAlbums(gd_client)
 
