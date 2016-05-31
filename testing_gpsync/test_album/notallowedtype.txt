@@ -1,0 +1,1 @@
+should not get uploaded as not of supported file type

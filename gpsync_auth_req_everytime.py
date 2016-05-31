@@ -18,6 +18,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from gdata.photos.service import GPHOTOS_INVALID_ARGUMENT, GPHOTOS_INVALID_CONTENT_TYPE, GooglePhotosException
 
+
 # This application now supports only image files of
 # types:'.png','.jpg','.jpeg' and '.gif'
 known_extensions = {
@@ -26,36 +27,24 @@ known_extensions = {
     '.jpg': 'image/jpeg',
     '.gif': 'image/gif'}
 
-# Authentication and Authorisation through google account connected to Picasa
-# based on process mentioned at
-# https://developers.google.com/identity/protocols/OAuth2
 
-
-def OAuth2Login(client_secrets, credential_store, email):
+def OAuth2Login(client_secrets, email):
     scope = 'https://picasaweb.google.com/data/'
     user_agent = 'piyush_gpsync'  # name of application
-
-    storage = Storage(credential_store)
-    credentials = storage.get()
-    if credentials is None or credentials.invalid:
-        flow = flow_from_clientsecrets(
-            client_secrets, scope=scope, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
-        uri = flow.step1_get_authorize_url()
-        webbrowser.open(uri)
-        code = raw_input('Enter the authentication code: ').strip()
-        credentials = flow.step2_exchange(code)
+    flow = flow_from_clientsecrets(
+        client_secrets, scope=scope, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+    uri = flow.step1_get_authorize_url()
+    webbrowser.open(uri)
+    code = raw_input('Enter the authentication code: ').strip()
+    credentials = flow.step2_exchange(code)
 
     if (credentials.token_expiry - datetime.utcnow()) < timedelta(minutes=5):
         http = httplib2.Http()
         http = credentials.authorize(http)
         credentials.refresh(http)
 
-    storage.put(credentials)
-
-    gd_client = gdata.photos.service.PhotosService(source=user_agent,
-                                                   email=email,
-                                                   additional_headers={'Authorization': 'Bearer %s' % credentials.access_token})
-
+    gd_client = gdata.photos.service.PhotosService(source=user_agent, additional_headers={
+                                                   'Authorization': 'Bearer %s' % credentials.access_token})
     return gd_client
 
 
@@ -97,17 +86,6 @@ def visit(arg, dirname, names):
     # considering empty albums also
     if count >= 0:
         arg[dirname] = {'files': sorted(mediaFiles)}
-
-    '''
-    # not treating the root directory of albums as a album if it has no photo
-    # while its subdirectories(local albums) are albums even if empty
-    if dirname == destination:
-        if count > 0:
-            arg[dirname] = {'files': sorted(mediaFiles)}
-    else:
-        if count >= 0:
-            arg[dirname] = {'files': sorted(mediaFiles)}
-    '''
 
 
 def find_media(source):  # path of photos within dir and subdirectories
@@ -326,7 +304,7 @@ if __name__ == '__main__':
 
     from client_data import *
 
-    gd_client = OAuth2Login(client_secret, credential_store, email)
+    gd_client = OAuth2Login(client_secret, email)
 
     while True:
         # adding delay as sometimes change done at picasa album takes time to
