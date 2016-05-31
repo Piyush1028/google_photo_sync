@@ -1,3 +1,5 @@
+#! /usr/bin/python2
+
 import os
 import sys
 import atom
@@ -8,7 +10,6 @@ import gdata.media
 import gdata.geo
 import gdata.gauth
 import httplib2
-import os
 import time
 import webbrowser
 import urllib
@@ -66,6 +67,7 @@ def get_web_albums(gd_client):  # Getting a dictionary of picasa albums
     print('WEBALBUMS:')
     for album in albums.entry:
         title = album.title.text
+        # Checking duplicate albums as duplicate is possible in Picasa but not in local
         if title in d:
             print("Duplicate web album:" + title)
         else:

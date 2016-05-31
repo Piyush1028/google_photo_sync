@@ -1,3 +1,5 @@
+#! /usr/bin/python2
+
 import os
 import sys
 import atom
@@ -8,7 +10,6 @@ import gdata.media
 import gdata.geo
 import gdata.gauth
 import httplib2
-import os
 import time
 import webbrowser
 import urllib
@@ -129,7 +130,8 @@ def get_local_albums(photos):
     print('LOCALALBUMS:')
     for i in photos:
         album = os.path.basename(i)  # obtaining album name from directory
-        if album in localalbums:
+        # Checking duplicate albums as duplicate is possible in Picasa but not in local
+        if album in localalbums:  
             print("duplicate " + album + ":\n" + i +
                   ":\n" + localalbums[album]['path'])
             raise Exception("duplicate album")
