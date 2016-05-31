@@ -41,6 +41,7 @@ For first time use and for a new user we require client_secret.json file for aut
 
 ### Note:
 
-+ "google_photo_sync" requires authorisation only for the first time use, as it saves the credentials as "credentials.dat” file for future use. But if you wish not to save the credentials please use "gpsync_auth_req_everytime.py". This will ask for authentication code every time.
++ "google_photo_sync" requires authorisation only for the first time use, as it saves the credentials as "credentials.dat” file for future use. **But if you wish not to save the credentials please use "gpsync_auth_req_everytime.py". This will ask for authentication code every time you start the utility.**
 + Different users require different "client_secret.json" created from their respective accounts.
 + This utility now supports only photos('.png','.jpg','.jpeg' and '.gif' only), but can be extended to other photo types and some video formats.
++ **For running Nosetest, please edit and change the email Id to your email Id**
