@@ -22,7 +22,7 @@ This is a Google Photos Two Way Sync Utility enabling syncing between Local Albu
 + google-api-python-client (1.5.0)
 
     ```
-    $ pip install --upgrade google-api-python-client
+    $ pip install google-api-python-client
     ```
 + nose (1.3.7) for running nosetests
 
@@ -45,14 +45,15 @@ For first time use and for a new user we require client_secret.json file for aut
 + Now you will get various options for download of album, upload of album or syncing of album.
 
 ## Running Test:
-+ A test program _**"test_using_nosetests.py"**_ has been added which uses the test files kept in the folder _**testing_gpsync**_.
++ A test program _**"nose_test.py"**_ has been added which uses the test files kept in the folder _**testing_gpsync**_.
 + The _**"testing_gpsync"**_ folder must be in the current working directory to work.
-+ Edit and change the _**email**_ in file _**"test_using_nosetests.py"**_ to the email id used for client generation.
-+ Run the test typing ```$ nosetests .\test_using_nosetests.py``` in command line.
-+ There is another test _**"test.py"**_ with similar functinality but without ant framework.
++ Edit and change the _**email**_ in file _**"nose_test.py"**_ to the email id used for client generation.
++ Run the test by typing ```$ nosetests .\nose_test.py``` in command line.
++ There is another test _**"simple_test.py"**_ with similar functinality but without any framework.
 
 ### Note:
 + "google_photo_sync" requires authorisation only for the first time use, as it saves the credentials as "credentials.dat” file for future use. **But if you wish not to save the credentials please use "gpsync_auth_req_everytime.py". This will ask for authentication code every time you start the utility.**
 + Different users require different "client_secret.json" created from their respective accounts.
 + This utility now supports only photos('.png','.jpg','.jpeg' and '.gif' only), but can be extended to other photo types and some video formats.
++ _**If you make any manual changes to either local or picasa album during running of utility, press any key other than D, d, U, u, S, s, E or e when prompted for to ensure utility recognises the changes and functions as expected.**_
 
