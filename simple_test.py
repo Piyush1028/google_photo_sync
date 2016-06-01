@@ -1,4 +1,3 @@
-
 from google_photo_sync import *
 from client_data import *
 
