@@ -29,25 +29,32 @@ known_extensions = {
     '.gif': 'image/gif'}
 
 
-def OAuth2Login(client_secrets, email):
+def OAuth2Login(client_secrets, credential_store, email):
     scope = 'https://picasaweb.google.com/data/'
     user_agent = 'piyush_gpsync'  # name of application
-    flow = flow_from_clientsecrets(
-        client_secrets, scope=scope, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
-    uri = flow.step1_get_authorize_url()
-    webbrowser.open(uri)
-    code = raw_input('Enter the authentication code: ').strip()
-    credentials = flow.step2_exchange(code)
+
+    storage = Storage(credential_store)
+    credentials = storage.get()
+    if credentials is None or credentials.invalid:
+        flow = flow_from_clientsecrets(
+            client_secrets, scope=scope, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+        uri = flow.step1_get_authorize_url()
+        webbrowser.open(uri)
+        code = raw_input('Enter the authentication code: ').strip()
+        credentials = flow.step2_exchange(code)
 
     if (credentials.token_expiry - datetime.utcnow()) < timedelta(minutes=5):
         http = httplib2.Http()
         http = credentials.authorize(http)
         credentials.refresh(http)
 
-    gd_client = gdata.photos.service.PhotosService(source=user_agent, additional_headers={
-                                                   'Authorization': 'Bearer %s' % credentials.access_token})
-    return gd_client
+    storage.put(credentials)
 
+    gd_client = gdata.photos.service.PhotosService(source=user_agent,
+                                                   email=email,
+                                                   additional_headers={'Authorization': 'Bearer %s' % credentials.access_token})
+
+    return gd_client
 
 def get_content_type(filename):  # Checking extension to get the type of file
     ext = os.path.splitext(filename)[1].lower()
@@ -67,7 +74,8 @@ def get_web_albums(gd_client):  # Getting a dictionary of picasa albums
     print('WEBALBUMS:')
     for album in albums.entry:
         title = album.title.text
-        # Checking duplicate albums as duplicate is possible in Picasa but not in local
+        # Checking duplicate albums as duplicate is possible in Picasa but not
+        # in local
         if title in d:
             print("Duplicate web album:" + title)
         else:
@@ -85,8 +93,8 @@ def visit(arg, dirname, names):
         if is_allowed_file(name) and os.path.isfile(os.path.join(dirname, name)):
             mediaFiles.append(name)
     count = len(mediaFiles)
-    # considering empty albums also
-    if count >= 0:
+    # not considering empty albums also
+    if count > 0:
         arg[dirname] = {'files': sorted(mediaFiles)}
 
 
@@ -177,14 +185,30 @@ def find_or_create_album(gd_client, title):
             print("caught exception " + str(e))
             print("sleeping for " + str(delay) + " seconds")
             time.sleep(delay)
-            delay = delay * 2
+            if delay <= 8:
+                delay = delay * 2
+            else:
+                print 'Failed, check solution and try later'
+                break
 
 
 # Download photo to a local album
 def download_photo(url_source, directory, phototitle):
+    delay = 1
     location = directory + "\%s" % (phototitle)
     print 'Downloading: %s in Local Album: %s \n' % (phototitle, os.path.basename(directory))
-    urllib.urlretrieve(url_source, location)
+    while True:
+        try:
+            urllib.urlretrieve(url_source, location)
+            break
+        except:
+            print("retrying in " + str(delay) + " seconds")
+            time.sleep(delay)
+            if delay <= 8:
+                delay = delay * 2
+            else:
+                print 'Download failed'
+                break
 
 
 def download_album(gd_client, webAlbum, location):
@@ -224,7 +248,11 @@ def upload_photo(gd_client, localPath, album, fileName):
             print("Got exception " + str(e))
             print("retrying in " + str(delay) + " seconds")
             time.sleep(delay)
-            delay = delay * 2
+            if delay <= 8:
+                delay = delay * 2
+            else:
+                print 'Upload failed, check solution and try later'
+                break
 
 
 # To upload a local album in Picasa account
@@ -306,7 +334,7 @@ if __name__ == '__main__':
 
     from client_data import *
 
-    gd_client = OAuth2Login(client_secret, email)
+    gd_client = OAuth2Login(client_secret, credential_store, email)
 
     while True:
         # adding delay as sometimes change done at picasa album takes time to
@@ -364,6 +392,7 @@ if __name__ == '__main__':
                 print 'wrong command'
                 continue
         elif (todo == 'E' or todo == 'e'):
+            os.remove(credential_store)
             break
         else:
             print 'wrong command'

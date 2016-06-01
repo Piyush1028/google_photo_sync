@@ -95,20 +95,9 @@ def visit(arg, dirname, names):
         if is_allowed_file(name) and os.path.isfile(os.path.join(dirname, name)):
             mediaFiles.append(name)
     count = len(mediaFiles)
-    # considering empty albums also
-    if count >= 0:
+    # not considering empty albums
+    if count > 0:
         arg[dirname] = {'files': sorted(mediaFiles)}
-
-    '''
-    # not treating the root directory of albums as a album if it has no photo
-    # while its subdirectories(local albums) are albums even if empty
-    if dirname == destination:
-        if count > 0:
-            arg[dirname] = {'files': sorted(mediaFiles)}
-    else:
-        if count >= 0:
-            arg[dirname] = {'files': sorted(mediaFiles)}
-    '''
 
 
 def find_media(source):  # path of photos within dir and subdirectories
@@ -130,8 +119,9 @@ def get_local_albums(photos):
     print('LOCALALBUMS:')
     for i in photos:
         album = os.path.basename(i)  # obtaining album name from directory
-        # Checking duplicate albums as duplicate is possible in Picasa but not in local
-        if album in localalbums:  
+        # Checking duplicate albums as duplicate is possible in Picasa but not
+        # in local
+        if album in localalbums:
             print("duplicate " + album + ":\n" + i +
                   ":\n" + localalbums[album]['path'])
             raise Exception("duplicate album")
@@ -199,7 +189,11 @@ def find_or_create_album(gd_client, title):
             print("caught exception " + str(e))
             print("sleeping for " + str(delay) + " seconds")
             time.sleep(delay)
-            delay = delay * 2
+            if delay <= 8:
+                delay = delay * 2
+            else:
+                print 'Failed, check solution and try later'
+                break
 
 
 # Download photo to a local album
@@ -246,7 +240,11 @@ def upload_photo(gd_client, localPath, album, fileName):
             print("Got exception " + str(e))
             print("retrying in " + str(delay) + " seconds")
             time.sleep(delay)
-            delay = delay * 2
+            if delay <= 8:
+                delay = delay * 2
+            else:
+                print 'Upload failed, check solution and try later'
+                break
 
 
 # To upload a local album in Picasa account
@@ -323,7 +321,7 @@ def del_extra_from_local(gd_client, both, localAlbums, webAlbums):
 if __name__ == '__main__':
     email = raw_input('Enter the email for google photo account --> ')
     destination = raw_input(
-        'Enter the base directory where you have the local albums --> ')
+        'Enter the base directory where you have the local albums ( ex. F:\photos ) --> ')
     assert (os.path.exists(destination)), 'No such directory exists'
 
     from client_data import *
@@ -346,8 +344,11 @@ if __name__ == '__main__':
 
         print 'Enter D, U, S or E \n D to download albums on web not present locally,\
          \n U to upload albums from directory not present on web,\
-         \n S to Sync the albums present at both places,\n E to exit'
+         \n S to Sync the albums present at both places,\n E to exit,\
+         \n Press any other key to refresh album contents list if any manual changes done\n'
+
         todo = raw_input()
+
         if (todo == 'D' or todo == 'd'):
             if (len(albumDiff['webOnly']) == 0):
                 print'All albums already present locally\n'

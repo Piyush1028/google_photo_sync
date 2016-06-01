@@ -2,21 +2,21 @@ from google_photo_sync import *
 from client_data import *
 from nose.tools import *
 
-email = 'piyush.bit1028@gmail.com'  # please edit and enter your email account
+email = 'abc@gmail.com'  # please edit and enter your email account
 gd_client = OAuth2Login(client_secret, credential_store, email)
 current_dir = os.getcwd()
 updirectory = current_dir + '\%s\%s' % ('testing_gpsync', 'test_album')
 dwlddirectory = updirectory + '\%s' % ('test_album')
 
 
-def for_album_download(gd_client):
+def for_album_download(gd_client):  # function for album download test
     testalbum = find_album(gd_client, 'test_album')
     download_album(gd_client, testalbum, dwlddirectory)
     localphototitle = os.listdir(dwlddirectory)
-    return localphototitle
+    return localphototitle  # returns list of files in downloaded album/directory
 
 
-def for_album_upload(gd_client):
+def for_album_upload(gd_client):  # function for album download test
     localAlbums = get_local_albums(find_media(updirectory))
     upload_album(gd_client, 'test_album', localAlbums['test_album'])
     testalbum = find_album(gd_client, 'test_album')
@@ -24,9 +24,10 @@ def for_album_upload(gd_client):
     photos = get_photos_for_picasa_album(gd_client, testalbum)
     for photo in photos:
         webphototitle.append(photo.title.text)
-    return webphototitle
+    return webphototitle  # returns list of files in uploaded album
 
 
+# Syncing by add test by downloading missing photo in local album
 def sync_by_add_1(gd_client):
     photo1path = dwlddirectory + '\%s' % ('testphoto1.jpg')
     os.remove(photo1path)
@@ -37,7 +38,7 @@ def sync_by_add_1(gd_client):
     return localphototitle
 
 
-def sync_by_add_2(gd_client):
+def sync_by_add_2(gd_client):  # syncing by addtest by uploading missing photo in Picasa album
     localAlbums = get_local_albums(find_media(dwlddirectory))
     webAlbums = get_web_albums(gd_client)
     photos = get_photos_for_picasa_album(gd_client, webAlbums['test_album'])
@@ -52,6 +53,7 @@ def sync_by_add_2(gd_client):
     return webphototitle
 
 
+# syncing by deletion test by propogating delete at local album to Picasa album
 def sync_by_del_1(gd_client):
     photo1path = dwlddirectory + '\%s' % ('testphoto1.jpg')
     os.remove(photo1path)
@@ -65,6 +67,7 @@ def sync_by_del_1(gd_client):
     return webphototitle
 
 
+# syncing by deletion test by propogating delete at Picasa album to local album
 def sync_by_del_2(gd_client):
     webAlbums = get_web_albums(gd_client)
     photos = get_photos_for_picasa_album(gd_client, webAlbums['test_album'])

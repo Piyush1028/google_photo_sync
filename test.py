@@ -1,14 +1,13 @@
 
 from google_photo_sync import *
-
+from client_data import *
 
 email = raw_input('enter the email for google photo account --> ')
-from client_data import *
 
 gd_client = OAuth2Login(client_secret, credential_store, email)
 
-pd = os.getcwd()
-updirectory = pd + '\%s\%s' % ('testing_gpsync', 'test_album')
+current_dir = os.getcwd()
+updirectory = current_dir + '\%s\%s' % ('testing_gpsync', 'test_album')
 dwlddirectory = updirectory + '\%s' % ('test_album')
 
 
