@@ -10,6 +10,7 @@ This is a Google Photos Two Way Sync Utility enabling syncing between Local Albu
   + Syncing by adding any missing file bidirectionally.
   + Syncing by deleting any extra file bidirectionally.
 + Ability to resume broken uploads.
++ Download and Upload of photos in original size along with Metadata
 
 ## Requirements:
 ### Packages
