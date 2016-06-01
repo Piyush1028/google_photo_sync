@@ -1,5 +1,7 @@
 #! /usr/bin/python2
 
+#This is a Google Photos Two Way Sync Utility enabling syncing between Local Albums and Google Photos/Picasa Albums.
+
 import os
 import sys
 import atom
