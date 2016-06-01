@@ -35,7 +35,7 @@ For first time use and for a new user we require client_secret.json file for aut
 + First create a project through the Google Developer Console: at https://console.developers.google.com/
 + Under API manager, click Credentials. Then go to _**"OAuth Consent Screen"**_ and give product name "piyush_gpsync" or any other name and save it.
 + Then under credentials click _**"create credentials"**_ and select _**"OAuth Client ID"**_ and choose application type as _**"other"**_.
-+ Once the Client ID has been created click _**"Download JSON"**_ and save the file as _**client_secret.json**_ to a location you wish.
++ Once the Client ID has been created click _**"Download JSON"**_ and save to a location you wish. _**Rename**_ the file to _**client_secret.json**_
 
 ## Usage:
 + When running for the first time after generating Client Secret, edit and put the directory location of _**"client_secret.json"**_ file under variable _**"location_client_secret"**_ in _**"client_data.py"**_ file and save it.
