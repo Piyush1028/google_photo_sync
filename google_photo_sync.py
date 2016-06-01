@@ -77,7 +77,7 @@ def is_allowed_file(filename):
 def get_web_albums(gd_client):  # Getting a dictionary of picasa albums
     albums = gd_client.GetUserFeed()
     d = {}
-    print('WEBALBUMS:')
+    print('\nWEBALBUMS:')
     for album in albums.entry:
         title = album.title.text
         if title in d:
@@ -118,7 +118,7 @@ def find_media(source):  # path of photos within dir and subdirectories
 # {'AlbumName1':{'files':['image1','imagr2']'path': 'path of AlbumName1'}...}
 def get_local_albums(photos):
     localalbums = {}
-    print('LOCALALBUMS:')
+    print('\nLOCALALBUMS:')
     for i in photos:
         album = os.path.basename(i)  # obtaining album name from directory
         # Checking duplicate albums as duplicate is possible in Picasa but not
@@ -148,8 +148,8 @@ def compare_local_to_web(local, web):
     for i in web:
         if i not in local:
             webOnly.append(i)
-    print 'Albums present only on Google Photos:\n', webOnly
-    print 'Albums present only on local directory:\n', localOnly
+    print '\nAlbums present only on Google Photos:\n', webOnly
+    print '\nAlbums present only on local directory:\n', localOnly
     return {'localOnly': localOnly, 'both': both, 'webOnly': webOnly}
 
 
@@ -201,7 +201,7 @@ def find_or_create_album(gd_client, title):
 # Download photo to a local album
 def download_photo(url_source, directory, phototitle):
     location = directory + "\%s" % (phototitle)
-    print 'Downloading: %s in Local Album: %s \n' % (phototitle, os.path.basename(directory))
+    print 'Downloading: %s in Local Album: %s ' % (phototitle, os.path.basename(directory))
     urllib.urlretrieve(url_source, location)
 
 
@@ -212,7 +212,7 @@ def download_album(gd_client, webAlbum, location):
     for photo in photos:
         if (is_allowed_file(photo.title.text)):
             download_photo(photo.content.src, location, photo.title.text)
-    print 'Completed download of Album: %s \n' % (webAlbum.title.text)
+    print '\nCompleted download of Album: %s ' % (webAlbum.title.text)
 
 
 # To download albums present only on the web
@@ -255,7 +255,7 @@ def upload_album(gd_client, albumname, localAlbum):
     for pic in localAlbum['files']:
         localPath = os.path.join(localAlbum['path'], pic)
         upload_photo(gd_client, localPath, webAlbum, pic)
-    print 'Completed upload of Album: %s' % (albumname)
+    print '\nCompleted upload of Album: %s' % (albumname)
 
 
 # For uploading Albums present only locally to Picasa album
@@ -344,46 +344,46 @@ if __name__ == '__main__':
         # list of respective album names
         albumDiff = compare_local_to_web(localAlbums, webAlbums)
 
-        print 'Enter D, U, S or E \n D to download albums on web not present locally,\
+        print '\nEnter D, U, S or E \n D to download albums on web not present locally,\
          \n U to upload albums from directory not present on web,\
          \n S to Sync the albums present at both places,\n E to exit,\
-         \n Press any other key to refresh album contents list if any manual changes done\n'
+         \n Press any other key to refresh album contents list if any manual changes done'
 
         todo = raw_input()
 
         if (todo == 'D' or todo == 'd'):
             if (len(albumDiff['webOnly']) == 0):
-                print'All albums already present locally\n'
+                print '\nAll albums already present locally'
             else:
                 download_webonly_albums(gd_client, albumDiff[
                     'webOnly'], webAlbums)
-                print 'ALL MISSING ALBUMS DOWLOADED SUSSEFULLY\n'
+                print '\nALL MISSING ALBUMS DOWLOADED SUSSEFULLY'
 
         elif (todo == 'U'or todo == 'u'):
             if (len(albumDiff['localOnly']) == 0):
-                print'All albums already present in picasa\n'
+                print '\nAll albums already present in picasa'
             else:
                 upload_localonly_albums(gd_client, albumDiff[
                     'localOnly'], localAlbums)
-                print 'ALL MISSING ALBUMS UPLOADED SUSSEFULLY\n'
+                print '\nALL MISSING ALBUMS UPLOADED SUSSEFULLY'
 
         elif (todo == 'S' or todo == 's'):
             htsync = raw_input(
-                'Enter A or R depending on how you want to sync \n A for adding missing photos \
+                '\nEnter A or R depending on how you want to sync \n A for adding missing photos \
             \n R for deleting any extra photo\n')
             if (htsync == 'A' or htsync == 'a'):
                 download_missing_photo(gd_client, albumDiff[
                     'both'], webAlbums, localAlbums)
                 upload_missing_photo(gd_client, albumDiff[
                     'both'], localAlbums, webAlbums)
-                print 'SYNCING COMPLETED BY ADDING MISSING PHOTOS\n'
+                print '\nSYNCING COMPLETED BY ADDING MISSING PHOTOS'
 
             elif (htsync == 'R' or htsync == 'r'):
                 del_extra_from_web(gd_client, albumDiff[
                     'both'], localAlbums, webAlbums)
                 del_extra_from_local(gd_client, albumDiff[
                     'both'], localAlbums, webAlbums)
-                print 'SYNCING COMPLETED BY DELETING EXTRA PHOTOS\n'
+                print '\nSYNCING COMPLETED BY DELETING EXTRA PHOTOS'
 
             else:
                 print 'wrong command'
